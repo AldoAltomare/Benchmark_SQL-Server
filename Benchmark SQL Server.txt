@@ -37,8 +37,8 @@ nominativo_agente	nvarchar(50)	,
 data_trascrizione_verbale date,	
 importo	money,
 decurtamento_punti int,
-idanagrafica int foreign key references anagrafica(idanagrafica) not null,
-idviolazione int foreign key references violazioni(idviolazione) not null
+constraint FK_anagraficaverbale idanagrafica int foreign key references anagrafica(idanagrafica) not null,
+constraint FK_violazioneverbale idviolazione int foreign key references violazioni(idviolazione) not null
 )
 
 4. Popolare le tabelle manualmente con dati a piacimento.
