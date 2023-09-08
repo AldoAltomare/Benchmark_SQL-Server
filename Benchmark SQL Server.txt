@@ -1,0 +1,252 @@
+Benchmark 08/09/2023
+
+Un corpo di Polizia Municipale intende creare un database per la gestione delle contravvenzioni ed i relativi pagamenti. Il database dovr… gestire un?anagrafica clienti, una entit… per contenere i tipi di violazioni contestate ed un?altra per annotare ed archiviare il verbale.
+In virt— di quanto sopra creare le seguenti entit….
+ANAGRAFICA (idanagrafica, Cognome, Nome, Indirizzo, Citt…, CAP, Cod_Fisc);
+TIPO VIOLAZIONE (idviolazione, descrizione);
+VERBALE (idverbale, DataViolazione, IndirizzoViolazione, Nominativo_Agente, DataTrascrizioneVerbale, Importo, DecurtamentoPunti); 
+-- la tab verbale avr… anche le chiavi esterne idanagrafica e id violazione
+
+-- db design su excel (https://docs.google.com/spreadsheets/d/1jvxZrymYhtANvza2fHo9B6zZZYzMu3-3N3acizKPwqY/edit#gid=0)
+1. Inserire in modo appropriato i campi per effettuare le relative relazioni,
+2. Gestire in modo appropriato i tipi di campi, chiavi primarie, chiavi esterne per ogni campo di ogni tabella,
+3. Creare le corrette relazioni alle tabelle,
+-- creazione tabelle. Unico dubbio sul cap che poteva essere anche char(5) per consentire inserimento dei cap inizianti con ?0?.
+-- inserimento di chiavi secondarie idanagrafica e idviolazioni dentro verbale. I punti sono fissi in base al tipo di violazione
+
+create table anagrafica (
+idanagrafica int identity primary key not null,
+cognome nvarchar(50),	
+nome nvarchar(50),	
+indirizzo nvarchar(50),	
+citta nvarchar(50),
+cap int,
+codice_fiscale char(16)
+)
+
+create table violazioni (
+idviolazione int identity primary key not null,
+descrizione	nvarchar(50)
+)
+
+create table verbali(
+idverbale int identity primary key,
+dataviolazione	date,
+indirizzo_violazione nvarchar(50),	
+nominativo_agente	nvarchar(50)	,
+data_trascrizione_verbale date,	
+importo	money,
+decurtamento_punti int,
+idanagrafica int foreign key references anagrafica(idanagrafica) not null,
+idviolazione int foreign key references violazioni(idviolazione) not null
+)
+
+4. Popolare le tabelle manualmente con dati a piacimento.
+-- scaricato i dati da chat gpt, ripuliti un po? e inseriti nelle tabelle tramite INSERT INTO
+INSERT INTO anagrafica (cognome, nome, indirizzo, citta, cap, codice_Fiscale)
+VALUES
+('Russo','Sara','Via Milano 10','Roma',00100,'RSSSRA85T41F501D'),
+('Bianco','Andrea','Via Napoli 15','Milano',20100,'BNCNDR88E05H726Q'),
+('Moretti','Francesca','Via Firenze 20','Napoli',80100,'MRTFNC89C60A309X'),
+('Romano','Marco','Via Genova 25','Bari',70100,'RMNMRC75D15G987S'),
+('Martino','Laura','Via Palermo 30','Torino',10100,'MRTLRA80C45B'),
+('Greco','Antonio','Via Venezia 35','Palermo',90100,'GRCNTN81R14A562P'),
+('Esposito','Sofia','Via Catania 40','Firenze',50100,'SPSFST76M63D987N'),
+('Ferrara','Luca','Via Bologna 50','Genova',16100,'FRRLLC73P21F123Q'),
+('Santoro','Giulia','Via Pisa 55','Catania',95100,'SNTRGL74R52E726R'),
+('Mariani','Giuseppe','Via Lecce 60','Venezia',30100,'MRNGPP69A10G963Y'),
+('Rossi','Chiara','Via Parma 70','Milano',20100,'RSSCHR78M60D509F'),
+('Conti','Andrea','Via Torino 75','Roma',00100,'CNTNDR82E12H345T'),
+('Bianchi','Elena','Via Verona 80','Napoli',80100,'BNCNLN85P42F987I'),
+('Romani','Francesco','Via Salerno 90','Bari',70100,'RMNFRN79D18C562V'),
+('Martini','Paolo','Via Milano 100','Torino',10100,'MRTPLA84A01H501W'),
+('Morelli','Sofia','Via Firenze 110','Palermo',90100,'MLLSFN88R41A309P'),
+('Greco','Andrea','Via Catania 120','Firenze',50100,'GRCNDR87P60B726L'),
+('Esposito','Marco','Via Bologna 130','Genova',16100,'SPSMRC82D25G123X'),
+('Ferrari','Maria','Via Pisa 140','Catania',95100,'FRRMRA75T42E726R'),
+('Santini','Luigi','Via Lecce 50','Venezia',30100,'SNTLUG80A15D963K')
+INSERT INTO violazioni (descrizione)
+VALUES 
+('superamento_limite_velocit…'),
+('parcheggio_sosta_vietata'),
+('parcheggio_posto_disabili'),
+('guida_in_stato_di_ebbrezza'),
+('guida_con_fanale_rotto'),
+('attraversamento_semaforo_rosso'),
+('carichi_sporgenti_non_segnalati'),
+('investimento_pedoni'),
+('non_rispetto_dello_stop'),
+('guida_contromano')
+
+INSERT INTO verbali (dataviolazione, indirizzo_violazione, nominativo_agente, data_trascrizione_verbale, importo, decurtamento_punti, idanagrafica, idviolazione)
+VALUES
+('2005-03-15','Via Roma 123','Marco Rossi','2023-08-16',150,2,1,3),
+('2007-08-23','Via Verdi 45','Laura Bianchi','2023-08-21',100,0,8,2),
+('2009-12-04','Corso Italia 56','Luca Russo','2023-08-26',200,1,12,1),
+('2011-06-19','Via Dante Alighieri 7','Maria Esposito','2023-08-31',120,0,5,5),
+('2013-10-27','Piazza Garibaldi  15','Paolo Ferrari','2023-09-06',80,5,17,4),
+('2014-04-11','Via Carducci  32','Alessia Greco','2023-08-08',180,0,3,5),
+('2016-09-08','Via Mazzini 73','Elena Martini','2023-08-16',90,1,3,7),
+('2017-11-30','Via XX Settembre  10','Marco Conti','2023-08-21',160,1,3,10),
+('2018-05-22','Corso Vittorio Emanuele 5','Francesca Santoro','2023-08-26',110,2,19,9),
+('2019-07-17','Via Garibaldi  88','Luigi Mariani','2023-09-01',130,1,10,7),
+('2020-01-03','Via Milano 10','Sara Russo','2023-09-06',170,5,7,8),
+('2021-03-29','Via Napoli  15','Andrea Bianco','2023-09-09',120,5,14,4),
+('2022-06-12','Via Firenze  20','Francesca Moretti','2023-08-16',190,0,2,2),
+('2022-09-25','Via Genova  25','Marco Romano','2023-08-21',140,5,2,4),
+('2022-12-07','Via Palermo  30','Laura Martino','2023-08-26',160,1,9,1),
+('2023-02-18','Via Venezia  35','Antonio Greco','2023-08-31',200,3,16,6),
+('2023-04-26','Via Catania  40','Sofia Esposito','2023-09-06',120,1,11,1),
+('2023-07-14','Via Bologna  50','Luca Ferrara','2023-09-09',180,1,4,1),
+('2023-09-02','Via Pisa  55','Giulia Santoro','2023-08-16',140,0,20,2),
+('2023-09-07','Via Lecce 60','Giuseppe Mariani','2023-08-21',110,2,9,3)
+
+Successivamente, creare le seguenti query per interrogare il database (tutte le query devono essere salvate su un file txt):
+1. Conteggio dei verbali trascritti
+select count(*) from verbali
+
+2. Conteggio dei verbali trascritti raggruppati per anagrafe
+-- fatto left join per vedere anche gli utenti che non hanno preso multe
+select nome, cognome, count(idverbale) as verbali_per_utente from anagrafica as a left join verbali as ve on a.idanagrafica = ve.idanagrafica group by nome, cognome
+
+3. Conteggio dei verbali trascritti raggruppati per tipo di violazione
+select descrizione, count(idverbale) as verbali_per_violazione from violazioni as vi join verbali as ve on vi.idviolazione = ve.idviolazione group by descrizione
+
+4. Totale dei punti decurtati per ogni anagrafe
+-- fatto left join per vedere come null anche gli utenti che non hanno mai preso multe
+select nome, cognome, sum(decurtamento_punti) as punti_per_anagrafica from anagrafica as a left join verbali as v on a.idanagrafica = v.idanagrafica group by nome, cognome	
+
+5. Cognome, Nome, Data violazione, Indirizzo violazione, importo e punti decurtati per tutti gli anagrafici
+residenti a Palermo
+-- fatto left join per vedere anche i palermitani che sono ligi al volante
+select nome, cognome, dataviolazione, indirizzo_violazione, citta, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+where citta like '_alermo' 
+group by nome, cognome, dataviolazione, indirizzo_violazione, citta
+
+
+6. Cognome, Nome, Indirizzo, Data violazione, importo e punti decurtati per le violazioni fatte tra il febbraio
+2009 e luglio 2009
+-- allargato la selezione delle date perch‚ non ce ne stava nessuna tra febbraio e luglio 2009
+select nome, cognome, dataviolazione, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+where dataviolazione between '31-01-2009' and '31-07-2020'
+group by nome, cognome, dataviolazione
+order by dataviolazione
+
+7. Totale degli importi per ogni anagrafico
+select nome, cognome, count(idverbale) as numero_multe, sum(importo) as somma_multe 
+from anagrafica as a 
+left join verbali as ve on a.idanagrafica = ve.idanagrafica 
+group by nome, cognome
+
+8. Visualizzazione di tutti gli anagrafici residenti a Palermo
+select * 
+from anagrafica
+where citta like '_alermo'
+9. Query parametrica che visualizzi Data violazione, Importo e decurtamento punti relativi ad una certa data
+Vedere store procedures
+
+10. Conteggio delle violazioni contestate raggruppate per Nominativo dell?agente di Polizia
+select nominativo_agente, count(idverbale) as multe_fatte
+from verbali 
+group by nominativo_agente
+
+11. Cognome, Nome, Indirizzo, Data violazione, Importo e punti decurtati per tutte le violazioni che superino il decurtamento di 5 punti
+-- usato il where per filtrare le violazioni singole prima delle somme. Cambiato il numero a 2 per avere pi— risultati
+select nome, cognome, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+where decurtamento_punti > 1
+group by nome, cognome
+order by punti_decurtati
+--versione con having per filtrare DOPO il raggruppamento
+select nome, cognome, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+group by nome, cognome
+having sum(decurtamento_punti) > 1
+order by punti_decurtati
+
+12. Cognome, Nome, Indirizzo, Data violazione, Importo e punti decurtati per tutte le violazioni che superino l?importo di 400 euro.
+-- cambiato importo a 150 per vedere pi— risultati
+select nome, cognome, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+where importo > 150
+group by nome, cognome
+order by somma_multe desc
+
+--versione con having per filtrare DOPO il raggruppamento
+
+select nome, cognome, count(idverbale) as numero_multe, sum(importo) as somma_multe, sum(decurtamento_punti) as punti_decurtati 
+from anagrafica as a 
+left join verbali as ve 
+on a.idanagrafica = ve.idanagrafica 
+group by nome, cognome
+having sum(importo) > 150
+order by somma_multe desc
+
+
+Infine si vogliono creare le seguenti storedProcedure:
+1) Una SP parametrica che, ricevendo in input un anno, visualizzi l?elenco delle contravvenzioni effettuate in un  quel determinato anno,
+
+CREATE PROCEDURE multe_per_anno 
+	@anno int
+AS
+BEGIN
+	select *
+	from verbali
+	where year(dataviolazione) = @anno
+END
+GO
+
+2) Una SP parametrica che, ricevendo in input una data, visualizzi il totale dei punti decurtati in quella
+determinata data
+-- unico problema Š che in input la data va inserita con gli apici
+
+CREATE PROCEDURE punti_tolti_per_data
+	@data date
+AS
+BEGIN
+	select sum(importo) as totale_punti_decurtati
+	from verbali
+	where dataviolazione = @data
+
+END
+
+3) Una SP che consenta di eliminare un determinato verbale identificandolo con il proprio identificativo.
+CREATE PROCEDURE elimina_verbale
+	@verbale int
+AS
+BEGIN
+	delete
+	from verbali
+	where idverbale = @verbale
+
+END
+
+9) Query parametrica che visualizzi Data violazione, Importo e decurtamento punti relativi ad una certa data
+-- unico problema Š che come prima in input la data va inserita con gli apici
+CREATE PROCEDURE info_per_data 
+	@data date
+AS
+BEGIN
+	select dataviolazione, sum(importo), sum(decurtamento_punti) as totale_punti_decurtati
+	from verbali
+	where dataviolazione = '@data'
+	group by dataviolazione
+END
+
+
+I testi delle stored Procedure devono essere salvati in un file txt.
+
+
+
